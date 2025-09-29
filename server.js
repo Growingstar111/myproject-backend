@@ -14,7 +14,7 @@ const app = express() ;
 
 const PORT = 5000;
 
-connectMongoDb("mongodb+srv://ranusharma14112003_db_user:PBEm21NvuCXhEpay@cluster0.vywi8i9.mongodb.net//ecomer").then(() => {
+connectMongoDb(process.env.MONGO_URI).then(() => {
   console.log("MongoDb is Connected");
 });
 
