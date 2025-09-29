@@ -14,11 +14,17 @@ const app = express() ;
 
 const PORT = 5000;
 
-connectMongoDb(process.env.MONGO_URI).then(() => {
-  console.log("MongoDb is Connected");
-});
+// connectMongoDb(process.env.MONGO_URI).then(() => {
+//   console.log("MongoDb is Connected");
+// });
+const createTestUser = async () => {
+  await User.create({ name: "Test", email: "test@example.com" });
+  console.log("Test user created");
+};
 
-
+connectMongoDb(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => createTestUser())
+  .catch(err => console.error(err));
 /***** connecting database using mongoose ******/
 
 
