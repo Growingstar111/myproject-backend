@@ -1,6 +1,7 @@
 const express = require("express");
-
-const { connectMongoDb } = require("./connection");
+const mongoose = require("mongoose");
+mongoose.set("debug", true);
+// const { connectMongoDb } = require("./connection");
 const { seedAdmin } = require("./seeder/admin-seeder");
 const cors = require("cors");
 const path = require("path");
@@ -10,22 +11,25 @@ const adminRouter = require("./routes/adminRoutes");
 const productRouter = require("./routes/product");
 const paymentRouter = require('./routes/payments')
 const orderRouter = require('./routes/order')
+require('dotenv').config();
 const app = express() ;
 
 const PORT = 5000;
 
-// connectMongoDb(process.env.MONGO_URI).then(() => {
-//   console.log("MongoDb is Connected");
-// });
-const createTestUser = async () => {
-  await User.create({ name: "Test", email: "test@example.com" });
-  console.log("Test user created");
+
+const connectMongoDb = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 30000, // 30 seconds
+    });
+    console.log("MongoDB connected");
+  } catch (err) {
+    console.error("MongoDB connection failed:", err.message);
+  }
 };
 
-connectMongoDb(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => createTestUser())
-  .catch(err => console.error(err));
-/***** connecting database using mongoose ******/
 
 
 app.use(express.urlencoded({ extended: false }));
@@ -46,6 +50,7 @@ app.use('/api/payment', paymentRouter);
 app.use('/api/order', orderRouter)
 
 seedAdmin();
+connectMongoDb();
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
